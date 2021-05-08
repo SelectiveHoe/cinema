@@ -1,17 +1,43 @@
+import { createMuiTheme, ThemeProvider } from '@material-ui/core';
+import { red } from '@material-ui/core/colors';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
+import { Provider } from 'react-redux';
 import App from './App';
-import reportWebVitals from './reportWebVitals';
+import { configureStore } from './store';
+import { getUserCredRequest } from './store/auth/actions';
+
+const theme = createMuiTheme({
+  palette: {
+    type: 'dark',
+    // primary: {
+    //   main: '#3d3d3d',
+    //   light: '#5c5c5c',
+    //   dark: '#2e2e2e',
+    //   contrastText: '#d1d1d1',
+    // },
+    // secondary: red,
+    secondary: {
+      main: '#3d3d3d',
+      light: '#5c5c5c',
+      dark: '#2e2e2e',
+      contrastText: '#d1d1d1',
+    },
+    primary: red,
+  },
+})
+
+const store = configureStore();
+
+store.dispatch(getUserCredRequest());
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <ThemeProvider theme={theme}>
+      <Provider store={store}>
+        <App />
+      </Provider>
+    </ThemeProvider>
   </React.StrictMode>,
   document.getElementById('root')
 );
-
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();
