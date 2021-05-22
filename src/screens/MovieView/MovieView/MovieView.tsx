@@ -272,7 +272,7 @@ const Main: React.FC<Props> = ({ getMovieByIdRequest, currMovie, subscribes }) =
             </Paper>
           </div>}
         </Paper>
-        <Lightbox mainSrc={currMovie.photos[0].file} onCloseRequest={() => {}}/>
+        {/* <Lightbox mainSrc={currMovie.photos[0].file} onCloseRequest={() => {}}/> */}
       </div>
     );
   } else {
