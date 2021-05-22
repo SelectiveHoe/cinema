@@ -29,8 +29,6 @@ const FFSelectField: React.FC<FFSelectFieldProps> = ({
     [onChange, input]
   );
 
-  console.log(items);
-
   return (
     <TextField
       FormHelperTextProps={{

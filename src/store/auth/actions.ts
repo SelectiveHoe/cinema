@@ -1,3 +1,4 @@
+import { Subscribe } from '../../common/types/movie';
 import { User, UserLoginRequest, UserLoginResponse, UserRegistrationRequest } from '../../common/types/user';
 import {
   GET_USER_CRED_REQUEST,
@@ -18,7 +19,14 @@ import {
   GetUserLoginRequest,
   GetUserLoginSuccess,
   GetUserLoginFailure,
+  SetSubscriptionInfo,
+  SET_SUBSCRIPTION_INFO,
 } from './types';
+
+export const setSubscription = (payload: Subscribe[]): SetSubscriptionInfo => ({
+  type: SET_SUBSCRIPTION_INFO,
+  payload,
+});
 
 export const getUserCredRequest = (): GetUserCredRequest => ({
   type: GET_USER_CRED_REQUEST,

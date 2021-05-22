@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { BACK_END_HOST } from '../common/constants';
 import { ApiResponse } from '../common/types/apiResponse';
-import { GetMovieRequest, Movie } from '../common/types/movie';
+import { Country, Genre, GetMovieRequest, Movie, Subscribe } from '../common/types/movie';
 import { User, UserLoginRequest, UserLoginResponse, UserRegistrationRequest } from '../common/types/user';
 
 class Api {
@@ -41,8 +41,26 @@ class Api {
     return {success: true, data};
   };
 
+  getCountry = async (): Promise<ApiResponse<Country[]>> => {
+    const {data} = await axios.get(`${BACK_END_HOST}/directory/country/`);
+
+    return {success: true, data};
+  };
+
+  getGenre = async (): Promise<ApiResponse<Genre[]>> => {
+    const {data} = await axios.get(`${BACK_END_HOST}/directory/movie_genre/`);
+
+    return {success: true, data};
+  };
+
   getMovieById = async (movieId: number): Promise<ApiResponse<Movie>> => {
     const {data} = await axios.get(`${BACK_END_HOST}/movies/movie/${movieId}`);
+
+    return {success: true, data};
+  };
+
+  getSubscribes = async (): Promise<ApiResponse<Subscribe[]>> => {
+    const {data} = await axios.get(`${BACK_END_HOST}/movies/subscription/`);
 
     return {success: true, data};
   };

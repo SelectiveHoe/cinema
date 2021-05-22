@@ -11,6 +11,7 @@ import {
 } from './types';
 import { ApiResponse } from '../../common/types/apiResponse';
 import { User, UserLoginResponse } from '../../common/types/user';
+import { Subscribe } from '../../common/types/movie';
 
 
 export function* getUserCred(action: GetUserCredRequest) {
@@ -18,6 +19,10 @@ export function* getUserCred(action: GetUserCredRequest) {
     const response: ApiResponse<User> = yield call(Api.doCred);
     if (response.success) {
       yield put(Actions.getUserCredSuccess(response.data));
+      const responseSubscribe: ApiResponse<Subscribe[]> = yield call(Api.getSubscribes);
+      if (responseSubscribe.success) {
+        yield put(Actions.setSubscription(responseSubscribe.data));
+      }
     } else {
       yield put(Actions.getUserCredFailure());
     }

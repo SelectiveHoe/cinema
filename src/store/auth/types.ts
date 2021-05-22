@@ -1,3 +1,4 @@
+import { Subscribe } from '../../common/types/movie';
 import { User, UserLoginRequest, UserLoginResponse, UserRegistrationRequest } from '../../common/types/user';
 
 export const GET_USER_CRED_REQUEST = '@User/cred/get';
@@ -11,6 +12,13 @@ export const GET_USER_LOGIN_FAILURE = '@User/login/failure';
 export const GET_USER_REGISTRATION_REQUEST = '@User/registration/get';
 export const GET_USER_REGISTRATION_SUCCESS = '@User/registration/success';
 export const GET_USER_REGISTRATION_FAILURE = '@User/registration/failure';
+
+export const SET_SUBSCRIPTION_INFO = '@User/subscription/set';
+
+export type SetSubscriptionInfo = {
+  type: typeof SET_SUBSCRIPTION_INFO;
+  payload: Subscribe[];
+};
 
 export type GetUserCredRequest = {
   type: typeof GET_USER_CRED_REQUEST;
@@ -65,4 +73,5 @@ export type UserActions =
   | GetUserLoginFailure
   | GetUserRegistrationRequest
   | GetUserRegistrationSuccess
-  | GetUserRegistrationFailure;
+  | GetUserRegistrationFailure
+  | SetSubscriptionInfo;

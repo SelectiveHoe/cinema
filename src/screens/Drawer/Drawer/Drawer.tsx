@@ -1,6 +1,6 @@
 import { createStyles, makeStyles, TextField, Theme, Typography } from '@material-ui/core';
 import {connect} from 'react-redux';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { AppState } from '../../../store';
 import { PrivateRoute } from '../../../component/PrivateRoute';
 import { Redirect, Switch, Link } from 'react-router-dom';
@@ -8,6 +8,7 @@ import Catalog from '../../Catalog';
 import Profile from '../../Profile';
 import Main from '../../Main';
 import MovieView from '../../MovieView';
+import { getMovieOptionsRequest } from '../../../store/movie/actions';
 
 const useStyles = makeStyles((theme: Theme) => createStyles({
   root: {
@@ -47,10 +48,12 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
 }));
 
 const mapStateToProps = (state: AppState) => ({
+  genres: state.movie.movie.allGenre,
+  country: state.movie.movie.allCountry,
 });
 
 const mapDispatchToProps = {
-  
+  getMovieOptionsRequest
 };
 
 type Props = ReturnType<typeof mapStateToProps> &
@@ -60,8 +63,15 @@ type Props = ReturnType<typeof mapStateToProps> &
     ) => void;
   };
 
-const Drawer: React.FC<Props> = () => {
+const Drawer: React.FC<Props> = ({ getMovieOptionsRequest, genres, country }) => {
   const classes = useStyles();
+
+  useEffect(() => {
+    if ( genres.length === 0 && country.length === 0 ) {
+      getMovieOptionsRequest();
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div className={classes.root}>

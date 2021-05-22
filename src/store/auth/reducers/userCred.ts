@@ -1,3 +1,4 @@
+import { Subscribe } from '../../../common/types/movie';
 import { User } from '../../../common/types/user';
 import {
   UserActions,
@@ -10,10 +11,12 @@ import {
   GET_USER_REGISTRATION_REQUEST,
   GET_USER_REGISTRATION_SUCCESS,
   GET_USER_REGISTRATION_FAILURE,
+  SET_SUBSCRIPTION_INFO,
 } from '../types';
 
 export type State = {
   currUser: User | null,
+  currSubscribe: Subscribe[],
   isLoading: boolean,
   isGetUserCredLoading: boolean,
   registrationResponseMessage: string,
@@ -22,6 +25,7 @@ export type State = {
 
 const initialState: State = {
   registrationResponseMessage: '',
+  currSubscribe: [],
   currUser: null,
   isGetUserCredLoading: false,
   isLoading: false,
@@ -34,6 +38,8 @@ export default (
   action: UserActions,
 ): State => {
   switch (action.type) {
+    case SET_SUBSCRIPTION_INFO:
+      return {...state, currSubscribe: action.payload};
     case GET_USER_REGISTRATION_REQUEST: 
       return {...state, isLoading: true}
     case GET_USER_REGISTRATION_SUCCESS: 
@@ -53,6 +59,7 @@ export default (
         currUser: action.payload,
       }
     case GET_USER_CRED_FAILURE:
+      localStorage.clear();
       return {...state, isGetUserCredLoading: false}
     case GET_USER_LOGIN_REQUEST: 
       return {...state, isLoading: true, responseMessage: ''}

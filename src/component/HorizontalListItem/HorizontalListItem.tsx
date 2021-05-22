@@ -3,11 +3,12 @@ import ScheduleIcon from '@material-ui/icons/Schedule';
 import React from 'react';
 import { useHistory } from 'react-router-dom';
 import imgNotFound from '../../common/images/404.jpg';
-import { Movie } from '../../common/types/movie';
+import { Movie, Photo } from '../../common/types/movie';
 
 export type Props = {
   movie: Movie,
   space?: boolean,
+  isHorizontalSpace?: boolean;
 };
 
 const useStyles = makeStyles((theme: Theme) => createStyles({
@@ -24,8 +25,6 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
     transition: 'all .1s ease-out',
     '&:hover': {
       cursor: 'pointer',
-      marginRight: theme.spacing(2),
-      marginLeft: theme.spacing(2),
     },
     '&:hover $itemText': {
       height: '60px',
@@ -63,17 +62,26 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
   },
 }));
 
-const HorizontalListItem: React.FC<Props> = ({ movie, space }) => {
+const HorizontalListItem: React.FC<Props> = ({ movie, space, isHorizontalSpace }) => {
   const classes = useStyles();
   const history = useHistory();
 
+  const getTitlePhoto = (photos: Photo[]) => {
+    for(var i = 0; i < photos.length; i++) {
+      if (photos[i].is_title) {
+        return photos[i].file;
+      }
+    }
+    return photos[0] ? photos[0].file : imgNotFound;
+  }
+
   return (
-    <div className={classes.item} style={{ marginBottom: !space ? '16px' : '0px'}} onClick={() => { history.push(`/main/movie/${movie.id}`) }}>
+    <div className={classes.item} style={{ marginRight: isHorizontalSpace ? '16px' : '', marginBottom: !space ? '16px' : ''}} onClick={() => { history.push(`/main/movie/${movie.id}`) }}>
       <div className={classes.image}>
-        <img alt={''} src={movie.photos[0] ? movie.photos[0].file : imgNotFound} style={{ height: '250px' }}/>
+        <img alt={''} src={getTitlePhoto(movie.photos)} style={{ height: '250px' }}/>
       </div>
       <div className={classes.itemText}>
-        <Typography style={{padding: '4px 8px', color: 'white'}}>
+        <Typography style={{padding: '4px 8px', color: 'white', whiteSpace: 'nowrap'}}>
           {movie.name}
         </Typography>
         <Typography variant="caption" style={{ padding: '4px 8px', color: 'white' }}>

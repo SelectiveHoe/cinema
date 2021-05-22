@@ -2,9 +2,9 @@ import { createStyles, makeStyles, Paper, Theme, Typography } from '@material-ui
 import {connect} from 'react-redux';
 import React, { useEffect } from 'react';
 import { AppState } from '../../../store';
-import ScrollMenu from 'react-horizontal-scrolling-menu';
 import HorizontalListItem from '../../../component/HorizontalListItem';
 import { getMainMovieRequest } from '../../../store/movie/actions';
+import HorizontalScroll from 'react-scroll-horizontal';
 
 const useStyles = makeStyles((theme: Theme) => createStyles({
   root: {
@@ -29,6 +29,7 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
     marginLeft: theme.spacing(2),
     marginRight: theme.spacing(2),
     padding: theme.spacing(1),
+    height: '280px',
   },
   SectionName: {
     fontSize: '1.2em',
@@ -37,7 +38,8 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
 }));
 
 const mapStateToProps = (state: AppState) => ({
-  movie: state.movie.movie.allFilms,
+  newMovie: state.movie.movie.newMovie,
+  ratingMovie: state.movie.movie.ratingMovie,
 });
 
 const mapDispatchToProps = {
@@ -51,13 +53,13 @@ type Props = ReturnType<typeof mapStateToProps> &
     ) => void;
   };
 
-const test = ['Godzila vs Kong', '2', '3', '4','5', '6', '7', '8','9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20'];
-
-const Main: React.FC<Props> = ({ getMainMovieRequest, movie }) => {
+const Main: React.FC<Props> = ({ getMainMovieRequest, newMovie, ratingMovie }) => {
   const classes = useStyles();
 
   useEffect(() => {
-    getMainMovieRequest({});
+    if (newMovie.length === 0 || ratingMovie.length === 0) {
+      getMainMovieRequest();
+    }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -65,12 +67,29 @@ const Main: React.FC<Props> = ({ getMainMovieRequest, movie }) => {
     <div className={classes.root}>
       <Paper elevation={3} className={classes.movieContainer}>
         <Typography color='secondary' className={classes.SectionName}>
+          Popular
+        </Typography>
+          <HorizontalScroll>
+            <div style={{ minWidth: '100vw', display: 'flex', justifyContent: 'center'}}>
+              {[...ratingMovie, ...ratingMovie, ...ratingMovie].map(item => <HorizontalListItem isHorizontalSpace space movie={item} key={item.id}/>)}
+            </div>
+          </HorizontalScroll>
+      </Paper>
+      <Paper elevation={3} className={classes.movieContainer}>
+        <Typography color='secondary' className={classes.SectionName}>
           New
         </Typography>
-          <ScrollMenu 
-            alignCenter={false}
-            data={movie.map(item => <HorizontalListItem space movie={item} key={item.id}/>)}
-          />
+          <HorizontalScroll pageLock>
+            <div style={{ minWidth: '100vw', display: 'flex', justifyContent: 'center'}}>
+              {newMovie.map(item => <HorizontalListItem isHorizontalSpace space movie={item} key={item.id}/>)}
+            </div>
+          </HorizontalScroll>
+      </Paper>
+      <Paper elevation={3} className={classes.movieContainer}>
+        <Typography color='secondary' className={classes.SectionName}>
+          MyList
+        </Typography>
+          ОРТЁМ ПИДОРАС
       </Paper>
     </div>
   );
