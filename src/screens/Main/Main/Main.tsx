@@ -40,6 +40,8 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
 const mapStateToProps = (state: AppState) => ({
   newMovie: state.movie.movie.newMovie,
   ratingMovie: state.movie.movie.ratingMovie,
+  historyMovie: state.movie.movie.historyMovie,
+  user: state.auth.userCred.currUser,
 });
 
 const mapDispatchToProps = {
@@ -53,7 +55,7 @@ type Props = ReturnType<typeof mapStateToProps> &
     ) => void;
   };
 
-const Main: React.FC<Props> = ({ getMainMovieRequest, newMovie, ratingMovie }) => {
+const Main: React.FC<Props> = ({ getMainMovieRequest, newMovie, ratingMovie, historyMovie, user }) => {
   const classes = useStyles();
 
   useEffect(() => {
@@ -71,7 +73,7 @@ const Main: React.FC<Props> = ({ getMainMovieRequest, newMovie, ratingMovie }) =
         </Typography>
           <HorizontalScroll>
             <div style={{ minWidth: '100vw', display: 'flex', justifyContent: 'center'}}>
-              {[...ratingMovie, ...ratingMovie, ...ratingMovie].map(item => <HorizontalListItem isHorizontalSpace space movie={item} key={item.id}/>)}
+              {ratingMovie.map(item => <HorizontalListItem isHorizontalSpace space movie={item} key={item.id}/>)}
             </div>
           </HorizontalScroll>
       </Paper>
@@ -85,12 +87,18 @@ const Main: React.FC<Props> = ({ getMainMovieRequest, newMovie, ratingMovie }) =
             </div>
           </HorizontalScroll>
       </Paper>
+      {!!user && 
       <Paper elevation={3} className={classes.movieContainer}>
         <Typography color='secondary' className={classes.SectionName}>
           MyList
         </Typography>
-          ОРТЁМ ПИДОРАС
+        <HorizontalScroll pageLock>
+            <div style={{ minWidth: '100vw', display: 'flex', justifyContent: 'center'}}>
+              {historyMovie.map(item => <HorizontalListItem isHorizontalSpace space movie={item} key={item.id}/>)}
+            </div>
+          </HorizontalScroll>
       </Paper>
+      }
     </div>
   );
 };

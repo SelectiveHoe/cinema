@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { BACK_END_HOST } from '../common/constants';
 import { ApiResponse } from '../common/types/apiResponse';
-import { Country, Genre, GetMovieRequest, Movie, Subscribe } from '../common/types/movie';
+import { Country, Genre, GetMovieRequest, Movie, SetTimeWatchFilmRequest, Subscribe } from '../common/types/movie';
 import { User, UserLoginRequest, UserLoginResponse, UserRegistrationRequest } from '../common/types/user';
 
 class Api {
@@ -61,6 +61,18 @@ class Api {
 
   getSubscribes = async (): Promise<ApiResponse<Subscribe[]>> => {
     const {data} = await axios.get(`${BACK_END_HOST}/movies/subscription/`);
+
+    return {success: true, data};
+  };
+
+  setTimeWatch = async (payload: SetTimeWatchFilmRequest): Promise<ApiResponse<boolean>> => {
+    const {data} = await axios.post(`${BACK_END_HOST}/movies/set_time_watched/${payload.filmId}/`, {duration: payload.duration});
+
+    return {success: true, data};
+  };
+
+  setCurrRatingMovie = async (payload: SetTimeWatchFilmRequest): Promise<ApiResponse<boolean>> => {
+    const {data} = await axios.post(`${BACK_END_HOST}/movies/set_rating/${payload.filmId}/`, {rating: payload.duration});
 
     return {success: true, data};
   };

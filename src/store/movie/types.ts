@@ -1,4 +1,4 @@
-import { GetMovieRequest, GetOptionsResponse, Movie } from '../../common/types/movie';
+import { GetMovieRequest, GetOptionsResponse, MainPage, Movie, SetTimeWatchFilmRequest } from '../../common/types/movie';
 
 export const GET_MAIN_MOVIE_REQUEST = '@Movie/main/get';
 export const GET_MAIN_MOVIE_SUCCESS = '@Movie/main/success';
@@ -16,9 +16,23 @@ export const MOVIE_OPTIONS_REQUEST = '@Movie/options/get';
 export const MOVIE_OPTIONS_SUCCESS = '@Movie/options/success';
 export const MOVIE_OPTIONS_FAILED = '@Movie/options/failure';
 
+export const SET_TIME_WATCH_FILM = '@Movie/time_watch/set';
+
 export const SET_NEW_MOVIE = '@Movie/new/set';
 
 export const SET_RATING_MOVIE = '@Movie/rating/set';
+
+export const SET_RATING_CURR_MOVIE = '@Movie/rating_curr/set';
+
+export type SetRatingCurrFilm = {
+  type: typeof SET_RATING_CURR_MOVIE;
+  payload: SetTimeWatchFilmRequest;
+};
+
+export type SetTimeWatchFilm = {
+  type: typeof SET_TIME_WATCH_FILM;
+  payload: SetTimeWatchFilmRequest;
+};
 
 export type MovieOptionsRequest = {
   type: typeof MOVIE_OPTIONS_REQUEST;
@@ -49,7 +63,7 @@ export type SearchMovieFailure = {
 
 export type SetNewMovie = {
   type: typeof SET_NEW_MOVIE;
-  payload: Movie[],
+  payload: MainPage,
 };
 
 export type SetRatingMovie = {

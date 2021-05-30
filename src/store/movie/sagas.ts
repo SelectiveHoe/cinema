@@ -2,16 +2,17 @@ import { ApiResponse } from '../../common/types/apiResponse';
 import {call, delay, put, takeLatest} from 'redux-saga/effects';
 import Api from '../../services/api';
 import * as Actions from './actions';
-import { SearchMovieRequest, GET_MAIN_MOVIE_REQUEST, GetMovieByIdRequest, GET_MOVIE_BYID_REQUEST, SEARCH_MOVIE_REQUEST, MOVIE_OPTIONS_REQUEST } from './types';
+import { SearchMovieRequest, GET_MAIN_MOVIE_REQUEST, GetMovieByIdRequest, GET_MOVIE_BYID_REQUEST, SEARCH_MOVIE_REQUEST, MOVIE_OPTIONS_REQUEST, SetTimeWatchFilm, SET_TIME_WATCH_FILM, SET_RATING_CURR_MOVIE, SetRatingCurrFilm } from './types';
 import { Country, Movie } from '../../common/types/movie';
 
 export function* getMovies() {
   try {
     const responseNewMovie: ApiResponse<Movie[]> = yield call(Api.getMovie, { ordering: '-date'});
     const responseRatingMovie: ApiResponse<Movie[]> = yield call(Api.getMovie, { ordering: '-name' });
+    const responseMyMovie: ApiResponse<Movie[]> = yield call(Api.getMovie, { watched: true });
 
-    if (responseNewMovie.success) {
-      yield put(Actions.setNewMovie(responseNewMovie.data));
+    if (responseNewMovie.success && responseMyMovie.success) {
+      yield put(Actions.setNewMovie({myFilms: responseMyMovie.data, newFilms: responseNewMovie.data}));
     }
     if (responseRatingMovie.success) {
       yield put(Actions.setRatingMovie(responseRatingMovie.data));
@@ -55,10 +56,36 @@ export function* getOptions() {
   }
 }
 
+export function* setTimeWatch(action: SetTimeWatchFilm) {
+  try {
+    const response: ApiResponse<boolean> = yield call(Api.setTimeWatch, action.payload);
+  } catch (error) {
+
+  }
+}
+
+export function* setRating(action: SetRatingCurrFilm) {
+  try {
+    const responseRating: ApiResponse<boolean> = yield call(Api.setCurrRatingMovie, action.payload);
+    try {
+      const response: ApiResponse<Movie> = yield call(Api.getMovieById, action.payload.filmId);
+      if (response.success) {
+        yield put(Actions.getMovieByIdSuccess(response.data));
+      }
+    } catch (error) {
+      yield put(Actions.getMovieByIdFailure());
+    }
+  } catch (error) {
+
+  }
+}
+
 // eslint-disable-next-line import/no-anonymous-default-export
 export default [
   takeLatest(GET_MAIN_MOVIE_REQUEST, getMovies),
   takeLatest(GET_MOVIE_BYID_REQUEST, getMovieById),
   takeLatest(SEARCH_MOVIE_REQUEST, searchMovie),
   takeLatest(MOVIE_OPTIONS_REQUEST, getOptions),
+  takeLatest(SET_TIME_WATCH_FILM, setTimeWatch),
+  takeLatest(SET_RATING_CURR_MOVIE, setRating)
 ];

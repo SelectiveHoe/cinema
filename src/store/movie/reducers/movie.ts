@@ -23,6 +23,7 @@ export type State = {
   allGenre: Genre[],
   newMovie: Movie[],
   ratingMovie: Movie[],
+  historyMovie: Movie[],
   isLoading: boolean,
   currMovie: Movie | null,
   isViewLoading: boolean,
@@ -34,6 +35,7 @@ const initialState: State = {
   isSearchLoading: false,
   newMovie: [],
   ratingMovie: [],
+  historyMovie: [],
   allCountry: [],
   allGenre: [],
   isViewLoading: false,
@@ -60,7 +62,7 @@ export default (
     case SEARCH_MOVIE_FAILED:
       return {...state, isSearchLoading: false};
     case SET_NEW_MOVIE:
-      return {...state, newMovie: action.payload}
+      return {...state, newMovie: action.payload.newFilms, historyMovie: action.payload.myFilms}
     case SET_RATING_MOVIE:
       return {...state, ratingMovie: action.payload}
     case GET_MAIN_MOVIE_REQUEST: 

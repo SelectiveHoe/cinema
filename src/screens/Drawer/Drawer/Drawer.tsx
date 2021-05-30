@@ -3,7 +3,7 @@ import {connect} from 'react-redux';
 import React, { useEffect } from 'react';
 import { AppState } from '../../../store';
 import { PrivateRoute } from '../../../component/PrivateRoute';
-import { Redirect, Switch, Link } from 'react-router-dom';
+import { Redirect, Switch, Link, Route } from 'react-router-dom';
 import Catalog from '../../Catalog';
 import Profile from '../../Profile';
 import Main from '../../Main';
@@ -50,6 +50,7 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
 const mapStateToProps = (state: AppState) => ({
   genres: state.movie.movie.allGenre,
   country: state.movie.movie.allCountry,
+  user: state.auth.userCred.currUser,
 });
 
 const mapDispatchToProps = {
@@ -63,7 +64,7 @@ type Props = ReturnType<typeof mapStateToProps> &
     ) => void;
   };
 
-const Drawer: React.FC<Props> = ({ getMovieOptionsRequest, genres, country }) => {
+const Drawer: React.FC<Props> = ({ getMovieOptionsRequest, genres, country, user }) => {
   const classes = useStyles();
 
   useEffect(() => {
@@ -92,21 +93,29 @@ const Drawer: React.FC<Props> = ({ getMovieOptionsRequest, genres, country }) =>
               Catalog
             </Typography>
           </Link>
+          {user ? 
           <Link to="/main/profile" className={classes.link}>
             <Typography className={classes.headerLink}>
               Profile
             </Typography>
           </Link>
+          :
+          <Link to="/login" className={classes.link}>
+            <Typography className={classes.headerLink}>
+              Login
+            </Typography>
+          </Link>
+          }
         </div>
         <div className={classes.SideHeader}>
           <TextField label="Search" variant="outlined" size="small" className={classes.searchField}/>
         </div>
       </div>
       <Switch>
-        <PrivateRoute path={"/main/catalog"} component={Catalog}/>
+        <Route path={"/main/catalog"} component={Catalog}/>
         <PrivateRoute path={"/main/profile"} component={Profile}/>
-        <PrivateRoute path={"/main/movie/:id"} component={MovieView}/>
-        <PrivateRoute path={"/main"} component={Main}/>
+        <Route path={"/main/movie/:id"} component={MovieView}/>
+        <Route path={"/main"} component={Main}/>
         <Redirect
         to={"/main"}
         />

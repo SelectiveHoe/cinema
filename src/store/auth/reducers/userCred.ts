@@ -61,7 +61,7 @@ export default (
     case GET_USER_CRED_FAILURE:
       localStorage.clear();
       return {...state, isGetUserCredLoading: false}
-    case GET_USER_LOGIN_REQUEST: 
+    case GET_USER_LOGIN_REQUEST:
       return {...state, isLoading: true, responseMessage: ''}
       case GET_USER_LOGIN_SUCCESS:
         localStorage.setItem('accessToken', action.payload.Token)

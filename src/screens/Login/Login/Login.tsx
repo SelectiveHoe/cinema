@@ -87,7 +87,7 @@ const Login: React.FC<Props> = ({ getUserLoginRequest, isLoading, responseMessag
   const history = useHistory();
 
   useEffect(() => {
-    if (!isLoading && user) {
+    if (!isLoading && user && history.location.pathname === '/login') {
       history.push('/main');
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps

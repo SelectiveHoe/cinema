@@ -19,10 +19,6 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
     height: '250px',
     position: 'relative',
     transition: 'all .2s',
-    '&:hover': {
-      cursor: 'pointer',
-      opacity: '.8'
-    },
     '&:hover $mainContainer': {
       opacity: '1',
     },
@@ -43,7 +39,6 @@ const PhotoView: React.FC<Props> = ({ url, index }) => {
   return (
     <div className={classes.icon}>
       <img src={url} alt='' style={{ height: '250px', marginLeft: index !== 0 ? '16px' : '0px' }} />
-      <OpenWithIcon className={classes.mainContainer}/>
     </div>
   );
 };

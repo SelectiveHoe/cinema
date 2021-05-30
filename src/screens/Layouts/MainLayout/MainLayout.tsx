@@ -17,7 +17,7 @@ const MainLayout: React.FC<Props> = () => {
         path={"/Login"}
         component={Login}
         />
-        <PrivateRoute path={"/main"} component={Drawer}/>
+        <Route path={"/main"} component={Drawer}/>
         <Route
         exact
         path={"/Registration"}

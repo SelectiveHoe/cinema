@@ -8,6 +8,9 @@ export type Movie = {
   description: string,
   release_date: string,
   duration: number,
+  time_watched: string,
+  user_rating: number,
+  user_rated_count: number,
   subscriptions: Subscribe[],
   videos: {
     video_360p: boolean,
@@ -31,9 +34,19 @@ export type GetOptionsResponse = {
   genre: Genre[],
 }
 
+export type SetTimeWatchFilmRequest = {
+  filmId: number,
+  duration: number,
+}
+
 export type Photo  = {
   file: string,
   is_title: boolean,
+}
+
+export type MainPage  = {
+  newFilms: Movie[],
+  myFilms: Movie[],
 }
 
 export type GetMovieRequest = {
@@ -47,6 +60,7 @@ export type GetMovieRequest = {
   genres?: string,
   page?: number,
   page_size?: number,
+  watched?: boolean,
 }
 
 export type Subscribe = {

@@ -1,7 +1,9 @@
-import { createStyles, makeStyles, Theme, Typography } from '@material-ui/core';
+import { Button, createStyles, makeStyles, Theme, Typography } from '@material-ui/core';
 import {connect} from 'react-redux';
 import React from 'react';
 import { AppState } from '../../../store';
+import { useHistory } from 'react-router-dom';
+import { getUserCredSuccess } from '../../../store/auth/actions';
 
 const useStyles = makeStyles((theme: Theme) => createStyles({
   root: {
@@ -33,7 +35,7 @@ const mapStateToProps = (state: AppState) => ({
 });
 
 const mapDispatchToProps = {
-  
+  getUserCredSuccess
 };
 
 type Props = ReturnType<typeof mapStateToProps> &
@@ -43,12 +45,19 @@ type Props = ReturnType<typeof mapStateToProps> &
     ) => void;
   };
 
-const Main: React.FC<Props> = () => {
+const Main: React.FC<Props> = ({ getUserCredSuccess }) => {
   const classes = useStyles();
+  const history = useHistory();
+
+  const logout = () => {
+    localStorage.clear();
+    getUserCredSuccess(null);
+    history.push('/login');
+  }
 
   return (
     <div className={classes.root}>
-      Profile
+      <Button variant="outlined" color="primary" style={{ width: '100px' }} onClick={logout}>Logout</Button>
     </div>
   );
 };

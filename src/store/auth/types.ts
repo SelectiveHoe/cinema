@@ -26,7 +26,7 @@ export type GetUserCredRequest = {
 
 export type GetUserCredSuccess = {
   type: typeof GET_USER_CRED_SUCCESS;
-  payload: User;
+  payload: User | null;
 };
 
 export type GetUserCredFailure = {

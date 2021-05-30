@@ -32,5 +32,9 @@ export const getFinalFormStyle = makeStyles((theme: Theme) => ({
   checkBox: {
     display: 'flex',
     alignItems: 'center',
+  },
+  radioContainer: {
+    display: 'flex',
+    flexDirection: 'row',
   }
 }));

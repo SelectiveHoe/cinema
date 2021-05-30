@@ -32,7 +32,7 @@ export const getUserCredRequest = (): GetUserCredRequest => ({
   type: GET_USER_CRED_REQUEST,
 });
 
-export const getUserCredSuccess = (payload: User): GetUserCredSuccess => ({
+export const getUserCredSuccess = (payload: User | null): GetUserCredSuccess => ({
   type: GET_USER_CRED_SUCCESS,
   payload,
 });

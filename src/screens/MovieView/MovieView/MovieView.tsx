@@ -2,7 +2,7 @@ import { Chip, createStyles, makeStyles, MenuItem, Paper, Select, Theme, Typogra
 import {connect} from 'react-redux';
 import React, { useEffect, useState } from 'react';
 import { AppState } from '../../../store';
-import { getMovieByIdRequest } from '../../../store/movie/actions';
+import { getMovieByIdRequest, setCurrentFilmRating, setTimeWatchFilmRequest } from '../../../store/movie/actions';
 import imgNotFound from '../../../common/images/404.jpg';
 import { useHistory, useParams } from 'react-router-dom';
 import ReactPlayer from 'react-player';
@@ -13,7 +13,7 @@ import { Rating } from '@material-ui/lab';
 import CheckIcon from '@material-ui/icons/Check';
 import HorizontalScroll from 'react-scroll-horizontal';
 import PhotoView from '../../../component/PhotoView';
-import Lightbox from 'react-image-lightbox';
+import userCred from '../../../store/auth/reducers/userCred';
 
 const useStyles = makeStyles((theme: Theme) => createStyles({
   root: {
@@ -73,14 +73,18 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
   },
 }));
 
+
 const mapStateToProps = (state: AppState) => ({
   currMovie: state.movie.movie.currMovie,
   isLoading: state.movie.movie.isViewLoading,
   subscribes: state.auth.userCred.currSubscribe,
+  user: state.auth.userCred.currUser,
 });
 
 const mapDispatchToProps = {
   getMovieByIdRequest,
+  setTimeWatchFilmRequest,
+  setCurrentFilmRating,
 };
 
 type Props = ReturnType<typeof mapStateToProps> &
@@ -90,15 +94,18 @@ type Props = ReturnType<typeof mapStateToProps> &
     ) => void;
   };
 
-const Main: React.FC<Props> = ({ getMovieByIdRequest, currMovie, subscribes }) => {
+const Main: React.FC<Props> = ({setCurrentFilmRating, setTimeWatchFilmRequest, getMovieByIdRequest, currMovie, subscribes, user }) => {
+  let player: ReactPlayer;
+  let isTimerSet: boolean = false;
+  const [currSec, setCurrSec] = useState<any>();
   const classes = useStyles();
-  const [currQuality, setCurrQuality] = useState<string>(currMovie ? (currMovie.videos.video_360p ? '360' : currMovie.videos.video_480p ? '480' : currMovie.videos.video_720p ? '720' : '0' ) : '0');
+  const [currQuality, setCurrQuality] = useState<string>(currMovie && currMovie.videos ? (currMovie.videos.video_360p ? '360' : currMovie.videos.video_480p ? '480' : currMovie.videos.video_720p ? '720' : '0' ) : '0');
   const { id } = useParams<{ id?: string | undefined }>();
   const [currUrl, setCurrUrl] = useState<string>('');
   const history = useHistory();
 
   useEffect(() => {
-    setCurrQuality(currMovie ? (currMovie.videos.video_360p ? '360' : currMovie.videos.video_480p ? '480' : currMovie.videos.video_720p ? '720' : '0' ) : '0');
+    setCurrQuality(currMovie && currMovie.videos ? (currMovie.videos.video_360p ? '360' : currMovie.videos.video_480p ? '480' : currMovie.videos.video_720p ? '720' : '0' ) : '0');
   }, [currMovie]);
 
   useEffect(() => {
@@ -108,10 +115,20 @@ const Main: React.FC<Props> = ({ getMovieByIdRequest, currMovie, subscribes }) =
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  
+  useEffect(() => {
+    return () => {
+      if(currSec && currMovie) {
+        setTimeWatchFilmRequest({ filmId: currMovie?.id, duration: parseInt(currSec.playedSeconds, 10) })
+      }
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currSec]);
+
   useEffect(() => {
     async function fetchBlob(currMovie: Movie | null) {
       if (currMovie) {
-        const result = await fetch(`${BACK_END_HOST}/movies/movie/stream_video/${currMovie.id}/${currQuality}`, {
+        const result = await fetch(`${BACK_END_HOST}/movies/movie/stream_video/${currMovie.id}/${currQuality}/`, {
           headers: {
             Authorization: `Token ${localStorage.getItem('accessToken')}`
           }
@@ -124,6 +141,12 @@ const Main: React.FC<Props> = ({ getMovieByIdRequest, currMovie, subscribes }) =
     fetchBlob(currMovie);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currMovie, currQuality]);
+
+  const setRaiting = (event: React.ChangeEvent<{}>, value: number | null) => {
+    if(value && currMovie) {
+      setCurrentFilmRating({filmId: currMovie.id, duration: value})
+    }
+  }
 
   const checkSubscribe = (userSubscribes: Subscribe[], filmsSubscribe: Subscribe[]): boolean => {
     if(filmsSubscribe.length === 0) {
@@ -152,7 +175,6 @@ const Main: React.FC<Props> = ({ getMovieByIdRequest, currMovie, subscribes }) =
     }
     return photos[0] ? photos[0].file : imgNotFound;
   }
-
   if (currMovie) {
     return (
       <div className={classes.root}>
@@ -165,16 +187,26 @@ const Main: React.FC<Props> = ({ getMovieByIdRequest, currMovie, subscribes }) =
               <img alt={''} src={getTitlePhoto(currMovie.photos)} className={classes.image}/>
               <Rating
                 name="simple-controlled"
-                precision={0.5}
-                value={currMovie.rating / 2}
+                precision={1}
+                max={10}
+                readOnly={!user}
+                onChange={setRaiting}
+                value={currMovie.rating}
               />
-              
+
+              <div style={{ display: 'flex' }}>
+                <Typography>
+                  {currMovie.rating} из 10 ({currMovie.user_rated_count})
+                </Typography>
+              </div>
+              {currMovie.user_rating && 
               <div style={{ display: 'flex' }}>
                 <CheckIcon style={{ color: '#40ff99' }}/>
                 <Typography>
                   Вы оценили
                 </Typography>
               </div>
+              }
             </div>
             
             <div className={classes.desc}>
@@ -220,6 +252,7 @@ const Main: React.FC<Props> = ({ getMovieByIdRequest, currMovie, subscribes }) =
               </div>
             </div>
           </div>
+          { currMovie.photos.length > 2 &&
           <div className={classes.photoScroll}>
             <HorizontalScroll>
               <div style={{ minWidth: '100vw', display: 'flex', justifyContent: 'center'}}>
@@ -232,28 +265,35 @@ const Main: React.FC<Props> = ({ getMovieByIdRequest, currMovie, subscribes }) =
                 })}
               </div>
             </HorizontalScroll>
-          </div>
+          </div>}
           {checkSubscribe(subscribes, currMovie.subscriptions) ? 
-          <div style={{ display: 'flex', alignItems: 'center', flexDirection: 'column'}}>
-            <ReactPlayer controls url={currUrl}/>
-            <div style={{ display: 'flex', justifyContent: 'flex-end', width: '100%'}}>
-            {currQuality !== null ?
-              <Select
-                labelId="demo-simple-select-label"
-                id="demo-simple-select"
-                className={classes.ddQual}
-                value={currQuality}
-                onChange={(name: string | unknown, val: unknown) => {
-                  setCurrQuality((val as any).props.value)
-                }}
-              >
-                {currMovie.videos.video_360p ? <MenuItem value={'360'}>360p</MenuItem> : ''}
-                {currMovie.videos.video_480p ? <MenuItem value={'480'}>480p</MenuItem> : ''}
-                {currMovie.videos.video_720p ? <MenuItem value={'720'}>720p</MenuItem> : ''}
-              </Select> : ''
-              }
+            <div style={{ display: 'flex', alignItems: 'center', flexDirection: 'column'}}>
+            {currQuality !== null && currMovie && currMovie.videos && (currMovie.videos.video_360p || currMovie.videos.video_480p || currMovie.videos.video_720p)  &&
+            <>
+              <ReactPlayer ref={ref => { if (ref) player = ref; }} onReady={() => {
+                if(!isTimerSet && currMovie && currMovie.time_watched && parseFloat(currMovie.time_watched) > 0) {
+                  player.seekTo(parseFloat(currMovie.time_watched), 'seconds');
+                  isTimerSet = true;
+                }
+              }} controls url={currUrl} onProgress={(obj) => {setCurrSec(obj)}}/>
+              <div style={{ display: 'flex', justifyContent: 'flex-end', width: '100%'}}>
+                <Select
+                  labelId="demo-simple-select-label"
+                  id="demo-simple-select"
+                  className={classes.ddQual}
+                  value={currQuality}
+                  onChange={(name: string | unknown, val: unknown) => {
+                    setCurrQuality((val as any).props.value)
+                  }}
+                >
+                  {currMovie.videos.video_360p ? <MenuItem value={'360'}>360p</MenuItem> : ''}
+                  {currMovie.videos.video_480p ? <MenuItem value={'480'}>480p</MenuItem> : ''}
+                  {currMovie.videos.video_720p ? <MenuItem value={'720'}>720p</MenuItem> : ''}
+                </Select>
+              </div>
+              </>
+                }
             </div>
-          </div>
           : <div className={classes.notSubscribeWinContainer}>
             <Paper elevation={3} className={classes.notSubscribeWin}>
               <div className={classes.subHeader}>
@@ -272,7 +312,6 @@ const Main: React.FC<Props> = ({ getMovieByIdRequest, currMovie, subscribes }) =
             </Paper>
           </div>}
         </Paper>
-        {/* <Lightbox mainSrc={currMovie.photos[0].file} onCloseRequest={() => {}}/> */}
       </div>
     );
   } else {

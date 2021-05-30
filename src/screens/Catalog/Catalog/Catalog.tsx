@@ -11,6 +11,7 @@ import HorizontalListItem from '../../../component/HorizontalListItem';
 import FFAutocompleteField from '../../../component/AutocompleteField';
 import { searchMovieRequest } from '../../../store/movie/actions';
 import { Country, Genre } from '../../../common/types/movie';
+import RadioGroupField from '../../../component/RadioGroupField';
 
 const useStyles = makeStyles((theme: Theme) => createStyles({
   root: {
@@ -79,6 +80,22 @@ const Catalog: React.FC<Props> = ({ films, searchMovieRequest, genres, country }
   const submit = (val: any) => {
     if (val.country && Array.isArray(val.country)) val.country = val.country.map((item: Country) => item.id).toString();
     if (val.genres && Array.isArray(val.genres)) val.genres = val.genres.map((item: Genre) => item.id).toString();
+
+    if (val.isLong) {
+      if(val.isLong === "short") {
+        val.duration_from = null;
+        val.duration_to = 3600;
+      }
+      if(val.isLong === "middle") {
+        val.duration_from = 3600;
+        val.duration_to = 9000;
+      }
+      if(val.isLong === "long") {
+        val.duration_from = 9000;
+        val.duration_to = null;
+      }
+    }
+  
     searchMovieRequest(val);
   }
 
@@ -149,23 +166,11 @@ const Catalog: React.FC<Props> = ({ films, searchMovieRequest, genres, country }
               </div>
 
             <div style={{ display: 'flex', justifyContent: 'space-around' }}>
-              <Field
-                name="isShort"
-                component={CheckBoxField}
-                InnerInputProps={{
-                  label: 'from ... to 60 minutes (Short)',
-                }}/>
-              <Field
-                name="isMiddle"
-                component={CheckBoxField}
-                InnerInputProps={{
-                  label: 'from 60 to 150 minutes (Normal)',
-                }}/>
-              <Field
+                <Field
                 name="isLong"
-                component={CheckBoxField}
+                component={RadioGroupField}
                 InnerInputProps={{
-                  label: 'from 150 to ... minutes (Long)',
+                  label: 'duration',
                 }}/>
             </div>
             <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
