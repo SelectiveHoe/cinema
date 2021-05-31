@@ -87,7 +87,8 @@ const Login: React.FC<Props> = ({ getUserLoginRequest, isLoading, responseMessag
   const history = useHistory();
 
   useEffect(() => {
-    if (!isLoading && user && history.location.pathname === '/login') {
+    console.log()
+    if (!isLoading && user && history.location.pathname.toLocaleLowerCase() === '/login') {
       history.push('/main');
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -168,6 +169,7 @@ const Login: React.FC<Props> = ({ getUserLoginRequest, isLoading, responseMessag
                 <div className={classes.submitContainer}>
                   {isLoading ? <Puff/> : <></>}
                 </div>
+                <Button variant="text" color="primary" style={{ marginRight: '8px'}} onClick={() => {history.push('/main')}}>Log-in as guest</Button>
                 <Button variant="outlined" color="primary" disabled={submitting} type="submit">Log-in</Button>
               </div>
             </div>

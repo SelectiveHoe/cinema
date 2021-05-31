@@ -10,6 +10,7 @@ import { BACK_END_HOST } from '../../../common/constants';
 import { Movie, Photo, Subscribe } from '../../../common/types/movie';
 import LocalOfferIcon from '@material-ui/icons/LocalOffer';
 import { Rating } from '@material-ui/lab';
+import PersonIcon from '@material-ui/icons/Person';
 import CheckIcon from '@material-ui/icons/Check';
 import HorizontalScroll from 'react-scroll-horizontal';
 import PhotoView from '../../../component/PhotoView';
@@ -96,7 +97,9 @@ type Props = ReturnType<typeof mapStateToProps> &
 
 const Main: React.FC<Props> = ({setCurrentFilmRating, setTimeWatchFilmRequest, getMovieByIdRequest, currMovie, subscribes, user }) => {
   let player: ReactPlayer;
-  let isTimerSet: boolean = false;
+  //let isTimerSet: boolean = false;
+  
+  const [isTimerSet, setIsTimerSet] = useState<boolean>(false);
   const [currSec, setCurrSec] = useState<any>();
   const classes = useStyles();
   const [currQuality, setCurrQuality] = useState<string>(currMovie && currMovie.videos ? (currMovie.videos.video_360p ? '360' : currMovie.videos.video_480p ? '480' : currMovie.videos.video_720p ? '720' : '0' ) : '0');
@@ -127,11 +130,11 @@ const Main: React.FC<Props> = ({setCurrentFilmRating, setTimeWatchFilmRequest, g
 
   useEffect(() => {
     async function fetchBlob(currMovie: Movie | null) {
-      if (currMovie) {
+      if (currMovie && currQuality !== "0") {
         const result = await fetch(`${BACK_END_HOST}/movies/movie/stream_video/${currMovie.id}/${currQuality}/`, {
-          headers: {
+           headers: localStorage.getItem('accessToken') ? {
             Authorization: `Token ${localStorage.getItem('accessToken')}`
-          }
+          } : {}
         });
         const blob = await result.blob();
         setCurrUrl(URL.createObjectURL(blob));
@@ -244,6 +247,22 @@ const Main: React.FC<Props> = ({setCurrentFilmRating, setTimeWatchFilmRequest, g
               </div>
               <div>
                 <Typography>
+                  Режисёры:
+                </Typography>
+                <Typography>
+                  {currMovie.directors.map(item => item.name + ', ')} 
+                </Typography>
+              </div>
+              <div>
+                <Typography>
+                  Актёры:
+                </Typography> 
+                <Typography>
+                  {currMovie.actors.map(item => item.actor.name + ', ')} 
+                </Typography>
+              </div>
+              <div>
+                <Typography>
                   Описание:
                 </Typography>
                 <Typography variant='caption'>
@@ -268,14 +287,16 @@ const Main: React.FC<Props> = ({setCurrentFilmRating, setTimeWatchFilmRequest, g
           </div>}
           {checkSubscribe(subscribes, currMovie.subscriptions) ? 
             <div style={{ display: 'flex', alignItems: 'center', flexDirection: 'column'}}>
-            {currQuality !== null && currMovie && currMovie.videos && (currMovie.videos.video_360p || currMovie.videos.video_480p || currMovie.videos.video_720p)  &&
+            {currQuality !== null && !currMovie.subscription_active && currUrl && currMovie && currMovie.videos && (currMovie.videos.video_360p || currMovie.videos.video_480p || currMovie.videos.video_720p)  &&
             <>
-              <ReactPlayer ref={ref => { if (ref) player = ref; }} onReady={() => {
+              <ReactPlayer ref={ref => { if (ref) player = ref; }} 
+              onReady={() => {
                 if(!isTimerSet && currMovie && currMovie.time_watched && parseFloat(currMovie.time_watched) > 0) {
+                  setIsTimerSet(true);
                   player.seekTo(parseFloat(currMovie.time_watched), 'seconds');
-                  isTimerSet = true;
                 }
-              }} controls url={currUrl} onProgress={(obj) => {setCurrSec(obj)}}/>
+              }}
+               controls url={currUrl} onProgress={(obj) => {setCurrSec(obj)}}/>
               <div style={{ display: 'flex', justifyContent: 'flex-end', width: '100%'}}>
                 <Select
                   labelId="demo-simple-select-label"
@@ -293,6 +314,23 @@ const Main: React.FC<Props> = ({setCurrentFilmRating, setTimeWatchFilmRequest, g
               </div>
               </>
                 }
+            {currMovie.subscription_active && 
+              <div className={classes.notSubscribeWinContainer}>
+                <Paper elevation={3} className={classes.notSubscribeWin}>
+                  <div className={classes.subHeader}>
+                    <Typography variant="h6">
+                      Материал доступен к просмотру только с подписки.
+                    </Typography>
+                  </div>
+                  <div className={classes.subBody}>
+                    <Typography variant="body2">
+                      Срок действия вашей подписки истёк, для продления подписки перейдите в свой профиль: 
+                      <Chip avatar={<PersonIcon style={{ height: '15px' }}/>} label={"Profile"} onClick={() => history.push('/main/profile')}/>
+                    </Typography>
+                    
+                  </div>
+                </Paper>
+              </div>}
             </div>
           : <div className={classes.notSubscribeWinContainer}>
             <Paper elevation={3} className={classes.notSubscribeWin}>

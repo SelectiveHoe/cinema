@@ -6,9 +6,12 @@ export type Movie = {
   name: string,
   rating: number,
   description: string,
+  subscription_active: string | null,
   release_date: string,
   duration: number,
   time_watched: string,
+  actors: Actor[],
+  directors: Directors[],
   user_rating: number,
   user_rated_count: number,
   subscriptions: Subscribe[],
@@ -67,4 +70,21 @@ export type Subscribe = {
   id: number;
   name: string;
   is_subscribed: boolean;
+}
+
+export type Directors = {
+  biography: string;
+  country: number;
+  date_birth: string;
+  id: number;
+  movies: number[];
+  name: string;
+  photos: Photo[];
+}
+
+export type Actor = {
+  actor: { id: number, name: string, country: number };
+  id: number;
+  movie: number;
+  role: string;
 }

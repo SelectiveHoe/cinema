@@ -10,7 +10,7 @@ type Props = {};
 const MainLayout: React.FC<Props> = () => {
 
   return (
-    <div style={{ backgroundColor: '#2b2b2b', minWidth: '100vh', minHeight: '100vh', display: 'flex' }}>
+    <div style={{ backgroundColor: '#2b2b2b', minWidth: '100vh', minHeight: '110vh', display: 'flex' }}>
       <Switch>
         <Route
         exact

@@ -78,7 +78,7 @@ const Catalog: React.FC<Props> = ({ films, searchMovieRequest, genres, country }
   }, []);
 
   const submit = (val: any) => {
-    if (val.country && Array.isArray(val.country)) val.country = val.country.map((item: Country) => item.id).toString();
+    if (val.country && Array.isArray(val.country)) val.countries = val.country.map((item: Country) => item.id).toString();
     if (val.genres && Array.isArray(val.genres)) val.genres = val.genres.map((item: Genre) => item.id).toString();
 
     if (val.isLong) {
