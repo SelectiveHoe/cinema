@@ -1,6 +1,5 @@
 import React from 'react';
 import { Switch, Route, Redirect } from 'react-router-dom';
-import { PrivateRoute } from '../../../component/PrivateRoute';
 import Login from '../../Login';
 import Drawer from '../../Drawer';
 import Registration from '../../Registration';

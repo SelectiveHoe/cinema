@@ -1,8 +1,5 @@
-import { createStyles, makeStyles, Theme, Typography } from '@material-ui/core';
-import ScheduleIcon from '@material-ui/icons/Schedule';
+import { createStyles, makeStyles, Theme } from '@material-ui/core';
 import React from 'react';
-import { useHistory } from 'react-router-dom';
-import OpenWithIcon from '@material-ui/icons/OpenWith';
 
 export type Props = {
   url: string,

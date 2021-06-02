@@ -14,7 +14,6 @@ import PersonIcon from '@material-ui/icons/Person';
 import CheckIcon from '@material-ui/icons/Check';
 import HorizontalScroll from 'react-scroll-horizontal';
 import PhotoView from '../../../component/PhotoView';
-import userCred from '../../../store/auth/reducers/userCred';
 
 const useStyles = makeStyles((theme: Theme) => createStyles({
   root: {
@@ -95,10 +94,10 @@ type Props = ReturnType<typeof mapStateToProps> &
     ) => void;
   };
 
-const Main: React.FC<Props> = ({setCurrentFilmRating, setTimeWatchFilmRequest, getMovieByIdRequest, currMovie, subscribes, user }) => {
+const Main: React.FC<Props> = ({setCurrentFilmRating, setTimeWatchFilmRequest, getMovieByIdRequest, currMovie, subscribes, user, isLoading }) => {
   let player: ReactPlayer;
-  //let isTimerSet: boolean = false;
-  
+  let isFilmLoading: boolean = false;
+
   const [isTimerSet, setIsTimerSet] = useState<boolean>(false);
   const [currSec, setCurrSec] = useState<any>();
   const classes = useStyles();
@@ -114,11 +113,12 @@ const Main: React.FC<Props> = ({setCurrentFilmRating, setTimeWatchFilmRequest, g
   useEffect(() => {
     if (id) {
       getMovieByIdRequest(parseInt(id, 10));
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      isFilmLoading = true;
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  
   useEffect(() => {
     return () => {
       if(currSec && currMovie) {
@@ -132,18 +132,23 @@ const Main: React.FC<Props> = ({setCurrentFilmRating, setTimeWatchFilmRequest, g
     async function fetchBlob(currMovie: Movie | null) {
       if (currMovie && currQuality !== "0") {
         const result = await fetch(`${BACK_END_HOST}/movies/movie/stream_video/${currMovie.id}/${currQuality}/`, {
-           headers: localStorage.getItem('accessToken') ? {
+           headers: {
             Authorization: `Token ${localStorage.getItem('accessToken')}`
-          } : {}
+          }
         });
-        const blob = await result.blob();
-        setCurrUrl(URL.createObjectURL(blob));
+        if (result) {
+          const blob = await result.blob();
+          if (blob) {
+            console.log(currMovie.id);
+            setCurrUrl(URL.createObjectURL(blob))
+          };
+        }
       }
     }
-  
-    fetchBlob(currMovie);
+
+    if (!isFilmLoading) fetchBlob(currMovie);
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currMovie, currQuality]);
+  }, [currMovie, currQuality, isLoading]);
 
   const setRaiting = (event: React.ChangeEvent<{}>, value: number | null) => {
     if(value && currMovie) {
@@ -178,7 +183,7 @@ const Main: React.FC<Props> = ({setCurrentFilmRating, setTimeWatchFilmRequest, g
     }
     return photos[0] ? photos[0].file : imgNotFound;
   }
-  if (currMovie) {
+  if (currMovie && !isLoading) {
     return (
       <div className={classes.root}>
         <Paper className={classes.container}>
@@ -287,11 +292,11 @@ const Main: React.FC<Props> = ({setCurrentFilmRating, setTimeWatchFilmRequest, g
           </div>}
           {checkSubscribe(subscribes, currMovie.subscriptions) ? 
             <div style={{ display: 'flex', alignItems: 'center', flexDirection: 'column'}}>
-            {currQuality !== null && !currMovie.subscription_active && currUrl && currMovie && currMovie.videos && (currMovie.videos.video_360p || currMovie.videos.video_480p || currMovie.videos.video_720p)  &&
+            {currQuality !== null && currQuality !== "0" && !currMovie.subscription_active && currUrl && currMovie && currMovie.videos && (currMovie.videos.video_360p || currMovie.videos.video_480p || currMovie.videos.video_720p)  &&
             <>
               <ReactPlayer ref={ref => { if (ref) player = ref; }} 
               onReady={() => {
-                if(!isTimerSet && currMovie && currMovie.time_watched && parseFloat(currMovie.time_watched) > 0) {
+                if(!isTimerSet && player && currMovie && currMovie.time_watched && parseFloat(currMovie.time_watched) > 0) {
                   setIsTimerSet(true);
                   player.seekTo(parseFloat(currMovie.time_watched), 'seconds');
                 }

@@ -3,12 +3,12 @@ import {connect} from 'react-redux';
 import React, { useEffect } from 'react';
 import { AppState } from '../../../store';
 import { PrivateRoute } from '../../../component/PrivateRoute';
-import { Redirect, Switch, Link, Route } from 'react-router-dom';
+import { Redirect, Switch, Link, Route, useHistory } from 'react-router-dom';
 import Catalog from '../../Catalog';
 import Profile from '../../Profile';
 import Main from '../../Main';
 import MovieView from '../../MovieView';
-import { getMovieOptionsRequest } from '../../../store/movie/actions';
+import { getMovieOptionsRequest, searchMovieRequest } from '../../../store/movie/actions';
 
 const useStyles = makeStyles((theme: Theme) => createStyles({
   root: {
@@ -54,7 +54,8 @@ const mapStateToProps = (state: AppState) => ({
 });
 
 const mapDispatchToProps = {
-  getMovieOptionsRequest
+  getMovieOptionsRequest,
+  searchMovieRequest,
 };
 
 type Props = ReturnType<typeof mapStateToProps> &
@@ -64,7 +65,8 @@ type Props = ReturnType<typeof mapStateToProps> &
     ) => void;
   };
 
-const Drawer: React.FC<Props> = ({ getMovieOptionsRequest, genres, country, user }) => {
+const Drawer: React.FC<Props> = ({ getMovieOptionsRequest, searchMovieRequest, genres, country, user }) => {
+  const history = useHistory();
   const classes = useStyles();
 
   useEffect(() => {
@@ -108,7 +110,13 @@ const Drawer: React.FC<Props> = ({ getMovieOptionsRequest, genres, country, user
           }
         </div>
         <div className={classes.SideHeader}>
-          <TextField label="Search" variant="outlined" size="small" className={classes.searchField}/>
+          <TextField label="Search" variant="outlined" size="small" onChange={(obj) => { 
+            if (history.location.pathname.toLocaleLowerCase() === "/main/catalog") {
+              searchMovieRequest({name: obj.target.value});
+            } else {
+              history.push("/main/catalog")
+            }
+           }} className={classes.searchField}/>
         </div>
       </div>
       <Switch>

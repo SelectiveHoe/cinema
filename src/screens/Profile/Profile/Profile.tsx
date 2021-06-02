@@ -5,7 +5,6 @@ import { AppState } from '../../../store';
 import { useHistory } from 'react-router-dom';
 import { getUserCredSuccess } from '../../../store/auth/actions';
 import profileImg from '../../../common/images/profile.png';
-import { BorderColor } from '@material-ui/icons';
 
 const useStyles = makeStyles((theme: Theme) => createStyles({
   root: {

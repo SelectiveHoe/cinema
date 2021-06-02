@@ -58,6 +58,7 @@ export function* getOptions() {
 
 export function* setTimeWatch(action: SetTimeWatchFilm) {
   try {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const response: ApiResponse<boolean> = yield call(Api.setTimeWatch, action.payload);
   } catch (error) {
 
@@ -66,6 +67,7 @@ export function* setTimeWatch(action: SetTimeWatchFilm) {
 
 export function* setRating(action: SetRatingCurrFilm) {
   try {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const responseRating: ApiResponse<boolean> = yield call(Api.setCurrRatingMovie, action.payload);
     try {
       const response: ApiResponse<Movie> = yield call(Api.getMovieById, action.payload.filmId);
@@ -73,7 +75,6 @@ export function* setRating(action: SetRatingCurrFilm) {
         yield put(Actions.getMovieByIdSuccess(response.data));
       }
     } catch (error) {
-      yield put(Actions.getMovieByIdFailure());
     }
   } catch (error) {
 

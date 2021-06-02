@@ -1,12 +1,10 @@
-import { Accordion, AccordionSummary, Button, createStyles, makeStyles, Paper, Theme, Typography } from '@material-ui/core';
+import { Accordion, AccordionSummary, Button, createStyles, makeStyles, Theme, Typography } from '@material-ui/core';
 import {connect} from 'react-redux';
 import React, { useEffect } from 'react';
 import TextField from '../../../component/TextFiled';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { AppState } from '../../../store';
 import { Field, Form } from 'react-final-form';
-import CheckBoxField from '../../../component/CheckBoxField';
-import FFSelectField from '../../../component/SelectField';
 import HorizontalListItem from '../../../component/HorizontalListItem';
 import FFAutocompleteField from '../../../component/AutocompleteField';
 import { searchMovieRequest } from '../../../store/movie/actions';
