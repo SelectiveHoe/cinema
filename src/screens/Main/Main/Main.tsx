@@ -79,7 +79,7 @@ const Main: React.FC<Props> = ({ getMainMovieRequest, newMovie, ratingMovie, his
       </Paper>
       <Paper elevation={3} className={classes.movieContainer}>
         <Typography color='secondary' className={classes.SectionName}>
-          New
+          Special
         </Typography>
           <HorizontalScroll pageLock>
             <div style={{ minWidth: '100vw', display: 'flex', justifyContent: 'center'}}>
